@@ -43,10 +43,51 @@ public class Teemo {
                     System.out.println("Invalid task number!");
                 }
             } else {
-                tasks.add(new Task(input));
-                System.out.println("____________________________________");
-                System.out.println("added: " + input);
-                System.out.println("____________________________________");
+                if (input.startsWith("todo")) {
+                    String desc = input.substring(5).trim();
+                    Todo newTodo = new Todo(desc);
+                    tasks.add(newTodo);
+                    System.out.println("____________________________________");
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("" + newTodo);
+                    System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                    System.out.println("____________________________________");
+
+                } else if (input.startsWith("deadline")) {
+                    String taskAndDeadline = input.substring(9).trim();
+                    String[] parts = taskAndDeadline.split("/by ");
+                    String desc = parts[0].trim();
+                    String deadline = parts[1];
+                    Deadline newDeadline = new Deadline(desc, deadline);
+                    tasks.add(newDeadline);
+                    System.out.println("____________________________________");
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("" + newDeadline);
+                    System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                    System.out.println("____________________________________");
+
+                } else if (input.startsWith("event")) {
+                    String taskAndTime = input.substring(6).trim();
+                    String[] parts = taskAndTime.split("/from ");
+                    String desc = parts[0].trim();
+                    String time = parts[1];
+                    String[] event = time.split("/to ");
+                    String start = event[0].trim();
+                    String end = event[1];
+
+                    Event newEvent = new Event(desc, start, end);
+                    tasks.add(newEvent);
+                    System.out.println("____________________________________");
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("" + newEvent);
+                    System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                    System.out.println("____________________________________");
+
+                }
+//                tasks.add(new Task(input));
+//                System.out.println("____________________________________");
+//                System.out.println("added: " + input);
+//                System.out.println("____________________________________");
             }
         }
         System.out.println("____________________________________");
