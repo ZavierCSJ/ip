@@ -46,6 +46,19 @@ public class Teemo {
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println(tasks.get(index - 1).toString());
                     System.out.println("____________________________________");
+                } else if (input.startsWith("delete")) {
+                    if (input.trim().equals("delete")) {
+                        throw new TeemoException("Try again!");
+                    }
+                    int index = Integer.parseInt(input.substring(7));
+                    if (index > tasks.size() || index <= 0) {
+                        throw new TeemoException("Invalid task number!");
+                    }
+                    System.out.println("____________________________________");
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println(tasks.get(index - 1).toString());
+                    System.out.println("____________________________________");
+                    tasks.remove(index - 1);
                 } else {
                     if (input.startsWith("todo")) {
                         if (input.trim().equals("todo")) {
