@@ -1,5 +1,13 @@
+package teemo;
+
 import java.util.Scanner;
 import java.util.ArrayList;
+
+import teemo.task.Task;
+import teemo.task.Todo;
+import teemo.task.Deadline;
+import teemo.task.Event;
+
 
 public class Teemo {
 
