@@ -1,6 +1,8 @@
 package teemo.task;
 
-public class Task {
+import java.lang.annotation.Documented;
+
+public abstract class Task {
     protected String description;
     protected boolean isDone;
 
@@ -25,4 +27,7 @@ public class Task {
     public String toString() {
         return String.format("%s %s", getStatusIcon(), this.description);
     }
+
+    public abstract String toSaveFormat();
+
 }

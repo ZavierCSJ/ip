@@ -12,9 +12,10 @@ import teemo.task.Event;
 public class Teemo {
 
     public static void main(String[] args) {
-        ArrayList<Task> tasks = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
+        Storage storage = new Storage("ip/data/teemo.txt");
+        ArrayList<Task> tasks = storage.loadTasks();
 
+        Scanner scanner = new Scanner(System.in);
         printWelcomeMessage();
 
         String input;
@@ -37,6 +38,7 @@ public class Teemo {
                         throw new TeemoException("Invalid task number!");
                     }
                     tasks.get(index - 1).markAsDone();
+                    storage.saveTasks(tasks);
                     System.out.println("____________________________________");
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println(tasks.get(index - 1).toString());
@@ -50,6 +52,7 @@ public class Teemo {
                         throw new TeemoException("Invalid task number!");
                     }
                     tasks.get(index - 1).unmarkAsDone();
+                    storage.saveTasks(tasks);
                     System.out.println("____________________________________");
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println(tasks.get(index - 1).toString());
@@ -67,6 +70,7 @@ public class Teemo {
                     System.out.println(tasks.get(index - 1).toString());
                     System.out.println("____________________________________");
                     tasks.remove(index - 1);
+                    storage.saveTasks(tasks);
                 } else {
                     if (input.startsWith("todo")) {
                         if (input.trim().equals("todo")) {
@@ -75,6 +79,7 @@ public class Teemo {
                         String desc = input.substring(5).trim();
                         Todo newTodo = new Todo(desc);
                         tasks.add(newTodo);
+                        storage.saveTasks(tasks);
                         System.out.println("____________________________________");
                         System.out.println("Got it. I've added this task:");
                         System.out.println("" + newTodo);
@@ -93,6 +98,7 @@ public class Teemo {
                         String deadline = parts[1];
                         Deadline newDeadline = new Deadline(desc, deadline);
                         tasks.add(newDeadline);
+                        storage.saveTasks(tasks);
                         System.out.println("____________________________________");
                         System.out.println("Got it. I've added this task:");
                         System.out.println("" + newDeadline);
@@ -116,6 +122,7 @@ public class Teemo {
 
                         Event newEvent = new Event(desc, start, end);
                         tasks.add(newEvent);
+                        storage.saveTasks(tasks);
                         System.out.println("____________________________________");
                         System.out.println("Got it. I've added this task:");
                         System.out.println("" + newEvent);
