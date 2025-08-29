@@ -95,15 +95,19 @@ public class Teemo {
                         }
                         String[] parts = taskAndDeadline.split("/by ");
                         String desc = parts[0].trim();
-                        String deadline = parts[1];
-                        Deadline newDeadline = new Deadline(desc, deadline);
-                        tasks.add(newDeadline);
-                        storage.saveTasks(tasks);
-                        System.out.println("____________________________________");
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("" + newDeadline);
-                        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
-                        System.out.println("____________________________________");
+                        String deadline = parts[1].trim();
+                        try {
+                            Deadline newDeadline = new Deadline(desc, deadline);
+                            tasks.add(newDeadline);
+                            storage.saveTasks(tasks);
+                            System.out.println("____________________________________");
+                            System.out.println("Got it. I've added this task:");
+                            System.out.println("" + newDeadline);
+                            System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                            System.out.println("____________________________________");
+                        } catch (RuntimeException e) {
+                            throw new TeemoException(e.getMessage());
+                        }
 
                     } else if (input.startsWith("event")) {
                         if (input.trim().equals("event")) {
@@ -120,14 +124,18 @@ public class Teemo {
                         String start = event[0].trim();
                         String end = event[1];
 
-                        Event newEvent = new Event(desc, start, end);
-                        tasks.add(newEvent);
-                        storage.saveTasks(tasks);
-                        System.out.println("____________________________________");
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("" + newEvent);
-                        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
-                        System.out.println("____________________________________");
+                        try {
+                            Event newEvent = new Event(desc, start, end);
+                            tasks.add(newEvent);
+                            storage.saveTasks(tasks);
+                            System.out.println("____________________________________");
+                            System.out.println("Got it. I've added this task:");
+                            System.out.println("" + newEvent);
+                            System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                            System.out.println("____________________________________");
+                        } catch (RuntimeException e) {
+                            throw new TeemoException(e.getMessage());
+                        }
 
                     } else {
                         throw new TeemoException("OOPS!!! I'm sorry, but I don't know what that means :-(");

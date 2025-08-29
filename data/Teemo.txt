@@ -1,4 +1,4 @@
 T | 0 | read book
-D | 1 | buy book | monday
-D | 0 | homework | Sunday
-E | 0 | meeting | 2pm-5pm
+T | 0 | read book
+D | 0 | return book | 2019-02-08
+E | 0 | meeting | 2023-08-30T14:00 | 2023-08-30T16:00
