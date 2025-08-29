@@ -3,6 +3,8 @@ package teemo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 import teemo.task.Task;
@@ -69,17 +71,18 @@ public class Storage {
                 break;
             case "D":
                 if (parts.length >= 4) {
-                    String deadline = parts[3].trim();
-                    task = new Deadline(description, deadline);
+                    String dateStr = parts[3].trim();
+                    LocalDate date = LocalDate.parse(dateStr);
+                    task = new Deadline(description, date);
                 }
                 break;
             case "E":
-                if (parts.length >= 4) {
-                    String timeInfo = parts[3].trim();
-                    String[] timeParts = timeInfo.split("-");
-                    if (timeParts.length == 2) {
-                        task = new Event(description, timeParts[0].trim(), timeParts[1].trim());
-                    }
+                if (parts.length >= 5) {
+                    String fromStr = parts[3].trim();
+                    String toStr = parts[4].trim();
+                    LocalDateTime from = LocalDateTime.parse(fromStr);
+                    LocalDateTime to = LocalDateTime.parse(toStr);
+                    task = new Event(description, from, to);
                 }
                 break;
             }
