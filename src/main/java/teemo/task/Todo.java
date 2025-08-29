@@ -9,4 +9,9 @@ public class Todo extends Task {
     public String toString() {
         return String.format("[T]%s", super.toString());
     }
+
+    @Override
+    public String toSaveFormat() {
+        return "T | " + (isDone ? "1" : "0") + " | " + description;
+    }
 }

@@ -1,7 +1,6 @@
 package teemo.task;
 
 public class Event extends Task {
-    String description;
     String start;
     String end;
 
@@ -14,5 +13,10 @@ public class Event extends Task {
     @Override
     public String toString() {
         return String.format("[E]%s (from: %s to: %s)", super.toString(), this.start, this.end);
+    }
+
+    @Override
+    public String toSaveFormat() {
+        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + start + "-" + end;
     }
 }
