@@ -11,7 +11,7 @@ public class Teemo {
 
     public static void main(String[] args) {
         Ui ui = new Ui();
-        Storage storage = new Storage("ip/data/teemo.txt");
+        Storage storage = new Storage("data/teemo.txt");
         ArrayList<Task> loadedTasks = storage.loadTasks();
         TaskList tasks = new TaskList(loadedTasks);
 
