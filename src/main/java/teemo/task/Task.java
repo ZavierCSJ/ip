@@ -33,4 +33,8 @@ public abstract class Task {
     public String getDescription() {
         return description;
     }
+
+    public boolean isDone() {
+        return isDone;
+    }
 }
