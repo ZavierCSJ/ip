@@ -20,97 +20,31 @@ public class Teemo {
         String input;
         while (!(input = ui.readCommand()).equals("bye")) {
             try {
-                if (input.equals("list")) {
+                String command = Parser.parseCommand(input);
+                switch (command) {
+                case "list":
                     ui.showTaskList(tasks.getTasks());
-                } else if (input.startsWith("mark")) {
-                    if (input.trim().equals("mark")) {
-                        throw new TeemoException("Nothing marked!");
-                    }
-                    int index = Integer.parseInt(input.substring(5));
-                    if (!tasks.isValidIndex(index)) {
-                        throw new TeemoException("Invalid task number!");
-                    }
-                    tasks.markTask(index);
-                    storage.saveTasks(tasks.getTasks());
-                    ui.showTaskMarked(tasks.get(index));
-                } else if (input.startsWith("unmark")) {
-                    if (input.trim().equals("unmark")) {
-                        throw new TeemoException("Nothing unmarked!");
-                    }
-                    int index = Integer.parseInt(input.substring(7));
-                    if (!tasks.isValidIndex(index)) {
-                        throw new TeemoException("Invalid task number!");
-                    }
-                    tasks.unmarkTask(index);
-                    storage.saveTasks(tasks.getTasks());
-                    ui.showTaskUnmarked(tasks.get(index));
-                } else if (input.startsWith("delete")) {
-                    if (input.trim().equals("delete")) {
-                        throw new TeemoException("Try again!");
-                    }
-                    int index = Integer.parseInt(input.substring(7));
-                    if (!tasks.isValidIndex(index)) {
-                        throw new TeemoException("Invalid task number!");
-                    }
-                    Task deletedTask = tasks.get(index);
-                    tasks.delete(index);
-                    storage.saveTasks(tasks.getTasks());
-                    ui.showTaskDeleted(deletedTask);
-                } else {
-                    if (input.startsWith("todo")) {
-                        if (input.trim().equals("todo")) {
-                            throw new TeemoException("OOPS!!! The description of a todo cannot be empty");
-                        }
-                        String desc = input.substring(5).trim();
-                        Todo newTodo = new Todo(desc);
-                        tasks.add(newTodo);
-                        storage.saveTasks(tasks.getTasks());
-                        ui.showTaskAdded(newTodo, tasks.size());
-                    } else if (input.startsWith("deadline")) {
-                        if (input.trim().equals("deadline")) {
-                            throw new TeemoException("OOPS!!! The description of a deadline cannot be empty");
-                        }
-                        String taskAndDeadline = input.substring(9).trim();
-                        if (!taskAndDeadline.contains("/by")) {
-                            throw new TeemoException("Need a deadline! -> (deadline [description] /by [date])");
-                        }
-                        String[] parts = taskAndDeadline.split("/by ");
-                        String desc = parts[0].trim();
-                        String deadline = parts[1].trim();
-                        try {
-                            Deadline newDeadline = new Deadline(desc, deadline);
-                            tasks.add(newDeadline);
-                            storage.saveTasks(tasks.getTasks());
-                            ui.showTaskAdded(newDeadline, tasks.size());
-                        } catch (RuntimeException e) {
-                            throw new TeemoException(e.getMessage());
-                        }
-
-                    } else if (input.startsWith("event")) {
-                        if (input.trim().equals("event")) {
-                            throw new TeemoException("OOPS!!! The description of a event cannot be empty");
-                        }
-                        String taskAndTime = input.substring(6).trim();
-                        if (!(taskAndTime.contains("/from") && taskAndTime.contains("/to"))) {
-                            throw new TeemoException("Invalid format! -> (event [description] /from [start] /to [end])");
-                        }
-                        String[] parts = taskAndTime.split("/from ");
-                        String desc = parts[0].trim();
-                        String time = parts[1];
-                        String[] event = time.split("/to ");
-                        String start = event[0].trim();
-                        String end = event[1];
-                        try {
-                            Event newEvent = new Event(desc, start, end);
-                            tasks.add(newEvent);
-                            storage.saveTasks(tasks.getTasks());
-                            ui.showTaskAdded(newEvent, tasks.size());
-                        } catch (RuntimeException e) {
-                            throw new TeemoException(e.getMessage());
-                        }
-                    } else {
-                        throw new TeemoException("OOPS!!! I'm sorry, but I don't know what that means :-(");
-                    }
+                    break;
+                case "mark":
+                    handleMarkCommand(input, tasks, storage, ui);
+                    break;
+                case "unmark":
+                    handleUnmarkCommand(input, tasks, storage, ui);
+                    break;
+                case "delete":
+                    handleDeleteCommand(input, tasks, storage, ui);
+                    break;
+                case "todo":
+                    handleTodoCommand(input, tasks, storage, ui);
+                    break;
+                case "deadline":
+                    handleDeadlineCommand(input, tasks, storage, ui);
+                    break;
+                case "event":
+                    handleEventCommand(input, tasks, storage, ui);
+                    break;
+                default:
+                    throw new TeemoException("OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
             } catch (NumberFormatException e) {
                 ui.showError("Please enter a valid task number.");
@@ -120,5 +54,58 @@ public class Teemo {
         }
         ui.showBye();
         ui.close();
+    }
+
+    private static void handleEventCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        Event event = Parser.parseEvent(input);
+        tasks.add(event);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskAdded(event, tasks.size());
+    }
+
+    private static void handleDeadlineCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        Deadline deadline = Parser.parseDeadline(input);
+        tasks.add(deadline);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskAdded(deadline, tasks.size());
+
+    }
+
+    private static void handleTodoCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        Todo todo = Parser.parseTodo(input);
+        tasks.add(todo);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskAdded(todo, tasks.size());
+    }
+
+    private static void handleDeleteCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        int index = Parser.parseTaskIndex(input, "delete");
+        if (!tasks.isValidIndex(index)) {
+            throw new TeemoException("Invalid task number!");
+        }
+        Task deletedTask = tasks.get(index);
+        tasks.delete(index);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskDeleted(deletedTask);
+    }
+
+    private static void handleUnmarkCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        int index = Parser.parseTaskIndex(input, "unmark");
+        if (!tasks.isValidIndex(index)) {
+            throw new TeemoException("Invalid task number!");
+        }
+        tasks.unmarkTask(index);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskUnmarked(tasks.get(index));
+    }
+
+    private static void handleMarkCommand(String input, TaskList tasks, Storage storage, Ui ui) throws TeemoException {
+        int index = Parser.parseTaskIndex(input, "mark");
+        if (!tasks.isValidIndex(index)) {
+            throw new TeemoException("Invalid task number!");
+        }
+        tasks.markTask(index);
+        storage.saveTasks(tasks.getTasks());
+        ui.showTaskMarked(tasks.get(index));
     }
 }
