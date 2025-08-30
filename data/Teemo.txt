@@ -1,0 +1,5 @@
+T | 1 | read book
+E | 0 | meeting | 2023-08-30T14:00 | 2023-08-30T16:00
+T | 1 | buy pen
+D | 0 | sell bitcoin | 2025-08-30
+E | 0 | winter interview | 2024-09-09T12:00 | 2024-09-09T13:00
