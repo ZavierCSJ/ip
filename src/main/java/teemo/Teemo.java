@@ -12,7 +12,8 @@ public class Teemo {
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage("ip/data/teemo.txt");
-        ArrayList<Task> tasks = storage.loadTasks();
+        ArrayList<Task> loadedTasks = storage.loadTasks();
+        TaskList tasks = new TaskList(loadedTasks);
 
         ui.showWelcome();
 
@@ -20,40 +21,40 @@ public class Teemo {
         while (!(input = ui.readCommand()).equals("bye")) {
             try {
                 if (input.equals("list")) {
-                    ui.showTaskList(tasks);
+                    ui.showTaskList(tasks.getTasks());
                 } else if (input.startsWith("mark")) {
                     if (input.trim().equals("mark")) {
                         throw new TeemoException("Nothing marked!");
                     }
                     int index = Integer.parseInt(input.substring(5));
-                    if (index > tasks.size() || index <= 0) {
+                    if (!tasks.isValidIndex(index)) {
                         throw new TeemoException("Invalid task number!");
                     }
-                    tasks.get(index - 1).markAsDone();
-                    storage.saveTasks(tasks);
-                    ui.showTaskMarked(tasks.get(index - 1));
+                    tasks.markTask(index);
+                    storage.saveTasks(tasks.getTasks());
+                    ui.showTaskMarked(tasks.get(index));
                 } else if (input.startsWith("unmark")) {
                     if (input.trim().equals("unmark")) {
                         throw new TeemoException("Nothing unmarked!");
                     }
                     int index = Integer.parseInt(input.substring(7));
-                    if (index > tasks.size() || index <= 0) {
+                    if (!tasks.isValidIndex(index)) {
                         throw new TeemoException("Invalid task number!");
                     }
-                    tasks.get(index - 1).unmarkAsDone();
-                    storage.saveTasks(tasks);
-                    ui.showTaskUnmarked(tasks.get(index - 1));
+                    tasks.unmarkTask(index);
+                    storage.saveTasks(tasks.getTasks());
+                    ui.showTaskUnmarked(tasks.get(index));
                 } else if (input.startsWith("delete")) {
                     if (input.trim().equals("delete")) {
                         throw new TeemoException("Try again!");
                     }
                     int index = Integer.parseInt(input.substring(7));
-                    if (index > tasks.size() || index <= 0) {
+                    if (!tasks.isValidIndex(index)) {
                         throw new TeemoException("Invalid task number!");
                     }
-                    Task deletedTask = tasks.get(index - 1);
-                    tasks.remove(index - 1);
-                    storage.saveTasks(tasks);
+                    Task deletedTask = tasks.get(index);
+                    tasks.delete(index);
+                    storage.saveTasks(tasks.getTasks());
                     ui.showTaskDeleted(deletedTask);
                 } else {
                     if (input.startsWith("todo")) {
@@ -63,7 +64,7 @@ public class Teemo {
                         String desc = input.substring(5).trim();
                         Todo newTodo = new Todo(desc);
                         tasks.add(newTodo);
-                        storage.saveTasks(tasks);
+                        storage.saveTasks(tasks.getTasks());
                         ui.showTaskAdded(newTodo, tasks.size());
                     } else if (input.startsWith("deadline")) {
                         if (input.trim().equals("deadline")) {
@@ -79,7 +80,7 @@ public class Teemo {
                         try {
                             Deadline newDeadline = new Deadline(desc, deadline);
                             tasks.add(newDeadline);
-                            storage.saveTasks(tasks);
+                            storage.saveTasks(tasks.getTasks());
                             ui.showTaskAdded(newDeadline, tasks.size());
                         } catch (RuntimeException e) {
                             throw new TeemoException(e.getMessage());
@@ -102,7 +103,7 @@ public class Teemo {
                         try {
                             Event newEvent = new Event(desc, start, end);
                             tasks.add(newEvent);
-                            storage.saveTasks(tasks);
+                            storage.saveTasks(tasks.getTasks());
                             ui.showTaskAdded(newEvent, tasks.size());
                         } catch (RuntimeException e) {
                             throw new TeemoException(e.getMessage());
