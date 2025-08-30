@@ -83,4 +83,16 @@ public class Ui {
     public void close() {
         scanner.close();
     }
+
+    public void showFindResults(ArrayList<Task> matchTasks, String keyword) {
+        showLine();
+        if (matchTasks.isEmpty()) {
+            System.out.println("No matching tasks found for: " + keyword);
+        } else {
+            System.out.println("Here are the matching tasks in your list:");
+            for (int i = 0; i < matchTasks.size(); i++) {
+                System.out.println((i + 1) + ". " + matchTasks.get(i));
+            }
+        }
+    }
 }

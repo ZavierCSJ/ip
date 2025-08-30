@@ -71,6 +71,9 @@ public class Teemo {
                 case "event":
                     handleEventCommand(input, tasks, storage, ui);
                     break;
+                case "find":
+                    handleFindCommand(input, tasks, ui);
+                    break;
                 default:
                     throw new TeemoException("OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
@@ -213,5 +216,11 @@ public class Teemo {
         tasks.markTask(index);
         storage.saveTasks(tasks.getTasks());
         ui.showTaskMarked(tasks.get(index));
+    }
+
+    private static void handleFindCommand(String input, TaskList tasks, Ui ui) throws TeemoException {
+        String keyword = Parser.parseFind(input);
+        ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
+        ui.showFindResults(matchingTasks, keyword);
     }
 }

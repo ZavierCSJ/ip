@@ -1,5 +1,6 @@
 package teemo;
 
+import java.lang.reflect.AnnotatedArrayType;
 import java.util.ArrayList;
 import teemo.task.Task;
 
@@ -48,5 +49,15 @@ public class TaskList {
         if (isValidIndex(index)) {
             tasks.get(index - 1).unmarkAsDone();
         }
+    }
+
+    public ArrayList<Task> findTasks(String keyword) {
+        ArrayList<Task> matchTasks = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
+                matchTasks.add(task);
+            }
+        }
+        return matchTasks;
     }
 }
