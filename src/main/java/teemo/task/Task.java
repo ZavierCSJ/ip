@@ -30,4 +30,11 @@ public abstract class Task {
 
     public abstract String toSaveFormat();
 
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
 }
