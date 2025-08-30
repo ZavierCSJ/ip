@@ -69,4 +69,23 @@ public class Parser {
             throw new TeemoException(e.getMessage());
         }
     }
+
+    /**
+     * Parses a find command to extract the search keyword.
+     *
+     * @param input the user input containing the find command
+     * @return the keyword to search for
+     * @throws TeemoException if no keyword is provided
+     */
+    public static String parseFind(String input) throws TeemoException {
+        if (input.trim().length() <= 4) {
+            throw new TeemoException("OOPS!!! Please specify a keyword to search for.");
+        }
+
+        String keyword = input.substring(4).trim();
+        if (keyword.isEmpty()) {
+            throw new TeemoException("OOPS!!! Please specify a keyword to search for.");
+        }
+        return keyword;
+    }
 }
