@@ -1,8 +1,6 @@
 package teemo;
 
-import java.util.Scanner;
 import java.util.ArrayList;
-
 import teemo.task.Task;
 import teemo.task.Todo;
 import teemo.task.Deadline;
@@ -12,23 +10,17 @@ import teemo.task.Event;
 public class Teemo {
 
     public static void main(String[] args) {
+        Ui ui = new Ui();
         Storage storage = new Storage("ip/data/teemo.txt");
         ArrayList<Task> tasks = storage.loadTasks();
 
-        Scanner scanner = new Scanner(System.in);
-        printWelcomeMessage();
+        ui.showWelcome();
 
         String input;
-        while (!(input = scanner.nextLine()).equals("bye")) {
+        while (!(input = ui.readCommand()).equals("bye")) {
             try {
                 if (input.equals("list")) {
-                    System.out.println("____________________________________");
-                    System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.printf("%d.%s\n", i + 1, tasks.get(i).toString());
-                    }
-                    System.out.println("____________________________________");
-
+                    ui.showTaskList(tasks);
                 } else if (input.startsWith("mark")) {
                     if (input.trim().equals("mark")) {
                         throw new TeemoException("Nothing marked!");
@@ -39,10 +31,7 @@ public class Teemo {
                     }
                     tasks.get(index - 1).markAsDone();
                     storage.saveTasks(tasks);
-                    System.out.println("____________________________________");
-                    System.out.println("Nice! I've marked this task as done:");
-                    System.out.println(tasks.get(index - 1).toString());
-                    System.out.println("____________________________________");
+                    ui.showTaskMarked(tasks.get(index - 1));
                 } else if (input.startsWith("unmark")) {
                     if (input.trim().equals("unmark")) {
                         throw new TeemoException("Nothing unmarked!");
@@ -53,10 +42,7 @@ public class Teemo {
                     }
                     tasks.get(index - 1).unmarkAsDone();
                     storage.saveTasks(tasks);
-                    System.out.println("____________________________________");
-                    System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println(tasks.get(index - 1).toString());
-                    System.out.println("____________________________________");
+                    ui.showTaskUnmarked(tasks.get(index - 1));
                 } else if (input.startsWith("delete")) {
                     if (input.trim().equals("delete")) {
                         throw new TeemoException("Try again!");
@@ -65,12 +51,10 @@ public class Teemo {
                     if (index > tasks.size() || index <= 0) {
                         throw new TeemoException("Invalid task number!");
                     }
-                    System.out.println("____________________________________");
-                    System.out.println("Noted. I've removed this task:");
-                    System.out.println(tasks.get(index - 1).toString());
-                    System.out.println("____________________________________");
+                    Task deletedTask = tasks.get(index - 1);
                     tasks.remove(index - 1);
                     storage.saveTasks(tasks);
+                    ui.showTaskDeleted(deletedTask);
                 } else {
                     if (input.startsWith("todo")) {
                         if (input.trim().equals("todo")) {
@@ -80,11 +64,7 @@ public class Teemo {
                         Todo newTodo = new Todo(desc);
                         tasks.add(newTodo);
                         storage.saveTasks(tasks);
-                        System.out.println("____________________________________");
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("" + newTodo);
-                        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
-                        System.out.println("____________________________________");
+                        ui.showTaskAdded(newTodo, tasks.size());
                     } else if (input.startsWith("deadline")) {
                         if (input.trim().equals("deadline")) {
                             throw new TeemoException("OOPS!!! The description of a deadline cannot be empty");
@@ -100,11 +80,7 @@ public class Teemo {
                             Deadline newDeadline = new Deadline(desc, deadline);
                             tasks.add(newDeadline);
                             storage.saveTasks(tasks);
-                            System.out.println("____________________________________");
-                            System.out.println("Got it. I've added this task:");
-                            System.out.println("" + newDeadline);
-                            System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
-                            System.out.println("____________________________________");
+                            ui.showTaskAdded(newDeadline, tasks.size());
                         } catch (RuntimeException e) {
                             throw new TeemoException(e.getMessage());
                         }
@@ -123,48 +99,25 @@ public class Teemo {
                         String[] event = time.split("/to ");
                         String start = event[0].trim();
                         String end = event[1];
-
                         try {
                             Event newEvent = new Event(desc, start, end);
                             tasks.add(newEvent);
                             storage.saveTasks(tasks);
-                            System.out.println("____________________________________");
-                            System.out.println("Got it. I've added this task:");
-                            System.out.println("" + newEvent);
-                            System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
-                            System.out.println("____________________________________");
+                            ui.showTaskAdded(newEvent, tasks.size());
                         } catch (RuntimeException e) {
                             throw new TeemoException(e.getMessage());
                         }
-
                     } else {
                         throw new TeemoException("OOPS!!! I'm sorry, but I don't know what that means :-(");
                     }
                 }
             } catch (NumberFormatException e) {
-                System.out.println("____________________________________");
-                System.out.println("Please enter a valid task number.");
-                System.out.println("____________________________________");
+                ui.showError("Please enter a valid task number.");
             } catch (TeemoException e) {
-                System.out.println("____________________________________");
-                System.out.println(e.getMessage());
-                System.out.println("____________________________________");
+                ui.showError(e.getMessage());
             }
         }
-        printByeMessage();
-        scanner.close();
-    }
-
-    private static void printWelcomeMessage() {
-        System.out.println("____________________________________");
-        System.out.println("Hello! I'm Teemo");
-        System.out.println("What can I do for you?");
-        System.out.println("____________________________________");
-    }
-
-    private static void printByeMessage() {
-        System.out.println("____________________________________");
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println("____________________________________");
+        ui.showBye();
+        ui.close();
     }
 }
