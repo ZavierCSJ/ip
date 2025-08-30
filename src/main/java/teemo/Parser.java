@@ -4,6 +4,10 @@ import teemo.task.Todo;
 import teemo.task.Deadline;
 import teemo.task.Event;
 
+/**
+ * Handles parsing of user input commands into executable actions.
+ * Supports parsing of todo, deadline, event, mark, unmark, delete, list, and find commands.
+ */
 public class Parser {
 
     public static String parseCommand(String input) {
@@ -21,6 +25,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a todo command and creates a Todo task.
+     *
+     * @param input the user input string containing the todo command
+     * @return a Todo object with the specified description
+     * @throws TeemoException if the todo description is empty
+     */
     public static Todo parseTodo(String input) throws TeemoException {
         if (input.trim().equals("todo")) {
             throw new TeemoException("OOPS!!! The description of a todo cannot be empty");
@@ -29,6 +40,13 @@ public class Parser {
         return new Todo(description);
     }
 
+    /**
+     * Parses a deadline command and creates a Deadline task.
+     *
+     * @param input the user input string containing the deadline command and due date
+     * @return a Deadline object with the specified description and due date
+     * @throws TeemoException if the deadline format is invalid or missing /by
+     */
     public static Deadline parseDeadline(String input) throws TeemoException {
         if (input.trim().equals("deadline")) {
             throw new TeemoException("OOPS!!! The description of a deadline cannot be empty");
@@ -48,6 +66,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a event command and creates a Event task.
+     *
+     * @param input the user input string containing the event command and start to end date
+     * @return a Event object with the specified description and event information
+     * @throws TeemoException if the deadline format is invalid or missing /from or /to
+     */
     public static Event parseEvent(String input) throws TeemoException {
         if (input.trim().equals("event")) {
             throw new TeemoException("OOPS!!! The description of an event cannot be empty");
