@@ -100,20 +100,20 @@ public class Storage {
     public void saveTasks(ArrayList<Task> tasks) {
         try {
             File file = new File(filePath);
-            System.out.println("DEBUG: Trying to save to: " + file.getAbsolutePath());
+//            System.out.println("DEBUG: Trying to save to: " + file.getAbsolutePath());
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
             }
 
-            System.out.println("DEBUG: Number of tasks to save: " + tasks.size());
+//            System.out.println("DEBUG: Number of tasks to save: " + tasks.size());
 
             FileWriter writer = new FileWriter(file);
             for (Task task : tasks) {
                 writer.write(task.toSaveFormat() + System.lineSeparator());
             }
             writer.close();
-            System.out.println("DEBUG: File saved successfully");
+//            System.out.println("DEBUG: File saved successfully");
         } catch (IOException e) {
             System.out.println("ERROR: Failed to save file!");
             System.out.println("ERROR: " + e.getMessage());
