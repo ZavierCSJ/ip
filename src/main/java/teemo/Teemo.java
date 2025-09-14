@@ -162,14 +162,14 @@ public class Teemo {
      * @throws TeemoException if the task index is invalid or out of range
      */
     private void handleDeleteCommand(String input) throws TeemoException {
-        int index = Parser.parseTaskIndex(input, "delete");
-        if (!tasks.isValidIndex(index)) {
-            throw new TeemoException("Invalid task number!");
-        }
-        Task deletedTask = tasks.get(index);
-        tasks.delete(index);
-        storage.saveTasks(tasks.getTasks());
-        ui.showTaskDeleted(deletedTask);
+        performTaskAction(input, "delete",
+                (tl, idx) -> {
+                    Task t = tl.get(idx);
+                    tl.delete(idx);
+                    return t;
+                },
+                (u, t) -> u.showTaskDeleted(t)
+        );
     }
 
     /**
@@ -183,13 +183,13 @@ public class Teemo {
      * @throws TeemoException if the task index is invalid or out of range
      */
     private void handleUnmarkCommand(String input) throws TeemoException {
-        int index = Parser.parseTaskIndex(input, "unmark");
-        if (!tasks.isValidIndex(index)) {
-            throw new TeemoException("Invalid task number!");
-        }
-        tasks.unmarkTask(index);
-        storage.saveTasks(tasks.getTasks());
-        ui.showTaskUnmarked(tasks.get(index));
+        performTaskAction(input, "unmark",
+                (tl, idx) -> {
+                    tl.unmarkTask(idx);
+                    return null;
+                },
+                (u, t) -> u.showTaskUnmarked(t)
+        );
     }
 
     /**
@@ -203,13 +203,13 @@ public class Teemo {
      * @throws TeemoException if the task index is invalid or out of range
      */
     private void handleMarkCommand(String input) throws TeemoException {
-        int index = Parser.parseTaskIndex(input, "mark");
-        if (!tasks.isValidIndex(index)) {
-            throw new TeemoException("Invalid task number!");
-        }
-        tasks.markTask(index);
-        storage.saveTasks(tasks.getTasks());
-        ui.showTaskMarked(tasks.get(index));
+        performTaskAction(input, "mark",
+                (tl, idx) -> {
+                    tl.markTask(idx);
+                    return null;
+                },
+                (u, t) -> u.showTaskMarked(t)
+        );
     }
 
     private void handleFindCommand(String input) throws TeemoException {
@@ -219,75 +219,131 @@ public class Teemo {
     }
 
     /**
-     * Processes user input and returns the response for Teemo GUI interaction.
+     * Processes user input and returns the response string for GUI interaction.
+     * This method handles all commands (list, mark, unmark, delete, todo, deadline, event, find)
+     * and returns formatted responses for display in the GUI.
      *
-     * @param input user input string
-     * @return response string from Teemo
+     * @param input the raw user input string
+     * @return a formatted response string to be displayed, or an error message
+     * @throws NumberFormatException if a task index is not a valid number
+     * @throws TeemoException if the command format is invalid or task index out of bounds
      */
     public String getResponse(String input) {
-       try {
-           String command = Parser.parseCommand(input);
-           switch (command) {
-           case "list":
-               return ui.getTaskListString(tasks.getTasks());
-           case "mark": {
-               int index = Parser.parseTaskIndex(input, "mark");
-               if (!tasks.isValidIndex(index)) {
-                   return "Invalid task number!";
-               }
-               tasks.markTask(index);
-               storage.saveTasks(tasks.getTasks());
-               return ui.getTaskMarkedString(tasks.get(index));
-           }
-           case "unmark": {
-               int index = Parser.parseTaskIndex(input, "unmark");
-               if (!tasks.isValidIndex(index)) {
-                   return "Invalid task number!";
-               }
-               tasks.unmarkTask(index);
-               storage.saveTasks(tasks.getTasks());
-               return ui.getTaskUnmarkedString(tasks.get(index));
-           }
-           case "delete": {
-               int index = Parser.parseTaskIndex(input, "delete");
-               if (!tasks.isValidIndex(index)) {
-                   return "Invalid task number!";
-               }
-               Task deleted = tasks.get(index);
-               tasks.delete(index);
-               storage.saveTasks(tasks.getTasks());
-               return ui.getTaskDeletedString(deleted);
-           }
-           case "todo": {
-               Todo todo = Parser.parseTodo(input);
-               tasks.add(todo);
-               storage.saveTasks(tasks.getTasks());
-               return ui.getTaskAddedString(todo, tasks.size());
-           }
-           case "deadline": {
-               Deadline deadline = Parser.parseDeadline(input);
-               tasks.add(deadline);
-               storage.saveTasks(tasks.getTasks());
-               return ui.getTaskAddedString(deadline, tasks.size());
-           }
-           case "event": {
-              Event event = Parser.parseEvent(input);
-              tasks.add(event);
-              storage.saveTasks(tasks.getTasks());
-              return ui.getTaskAddedString(event, tasks.size());
-           }
-           case "find": {
-               String keyword = Parser.parseFind(input);
-               ArrayList<Task> foundTasks = tasks.findTasks(keyword);
-               return ui.getFindResultsString(foundTasks, keyword);
-           }
-           default:
-               return "OOPS!!! I'm sorry, but I don't know what that means :-(";
-           }
-       } catch (NumberFormatException e) {
-           return "Plase enter a valid task number.";
-       } catch (TeemoException e) {
-           return e.getMessage();
-       }
+        try {
+            String command = Parser.parseCommand(input);
+
+            switch (command) {
+            case "list":
+                return ui.getTaskListString(tasks.getTasks());
+
+            case "find":
+                String keyword = Parser.parseFind(input);
+                ArrayList<Task> foundTasks = tasks.findTasks(keyword);
+                return ui.getFindResultsString(foundTasks, keyword);
+
+            case "todo":
+                Todo todo = Parser.parseTodo(input);
+                tasks.add(todo);
+                storage.saveTasks(tasks.getTasks());
+                return ui.getTaskAddedString(todo, tasks.size());
+
+            case "deadline":
+                Deadline deadline = Parser.parseDeadline(input);
+                tasks.add(deadline);
+                storage.saveTasks(tasks.getTasks());
+                return ui.getTaskAddedString(deadline, tasks.size());
+
+            case "event":
+                Event event = Parser.parseEvent(input);
+                tasks.add(event);
+                storage.saveTasks(tasks.getTasks());
+                return ui.getTaskAddedString(event, tasks.size());
+
+            case "mark":
+                return handleTaskAction(input, "mark",
+                        (tl, idx) -> {
+                            tl.markTask(idx);
+                            return null;
+                        },
+                        (u, t) -> u.getTaskMarkedString(t)
+                );
+
+            case "unmark":
+                return handleTaskAction(input, "unmark",
+                        (tl, idx) -> {
+                            tl.unmarkTask(idx);
+                            return null;
+                        },
+                        (u, t) -> u.getTaskUnmarkedString(t)
+                );
+
+            case "delete":
+                return handleTaskAction(input, "delete",
+                        (tl, idx) -> {
+                            Task t = tl.get(idx);
+                            tl.delete(idx);
+                            return t;
+                        },
+                        (u, t) -> u.getTaskDeletedString(t)
+                );
+
+            default:
+                return "OOPS!!! I'm sorry, but I don't know what that means :-(";
+            }
+        } catch (NumberFormatException e) {
+            return "Please enter a valid task number.";
+        } catch (TeemoException e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * Helper method to safely perform actions on a task by index.
+     * Reusable for mark, unmark, delete operations.
+     *
+     * @param input          raw user input line
+     * @param command        the command name (e.g., "mark", "delete")
+     * @param actionHandler  function to apply to the task list (e.g., markTask, delete)
+     * @param displayAction  function to display result to UI (e.g., showTaskMarked)
+     * @throws TeemoException if task index is invalid or command format incorrect
+     */
+    private void performTaskAction(String input, String command,
+                                   TaskList.ActionHandler actionHandler,
+                                   TaskList.ActionDisplay displayAction) throws TeemoException {
+        int index = Parser.parseTaskIndex(input, command);
+        if (!tasks.isValidIndex(index)) {
+            throw new TeemoException("Invalid task number!");
+        }
+
+        Task task = actionHandler.handle(tasks, index);
+        storage.saveTasks(tasks.getTasks());
+
+        displayAction.show(ui, task != null ? task : tasks.get(index));
+    }
+
+    /**
+     * Helper method for GUI mode to handle task actions and return a string response.
+     * Wrapper around performTaskAction() for use with getResponse().
+     *
+     * @param input          raw user input line
+     * @param command        the command name (e.g., "mark", "delete")
+     * @param actionHandler  function to apply to the task list
+     * @param displayAction  function to return a formatted string response
+     * @return formatted response string
+     * @throws TeemoException if task index is invalid or command format incorrect
+     */
+    private String handleTaskAction(String input, String command,
+                                    TaskList.ActionHandler actionHandler,
+                                    TaskList.StringDisplay displayAction) throws TeemoException {
+        int index = Parser.parseTaskIndex(input, command);
+        if (!tasks.isValidIndex(index)) {
+            throw new TeemoException("Invalid task number!");
+        }
+
+        Task task = actionHandler.handle(tasks, index);
+        storage.saveTasks(tasks.getTasks());
+
+        return displayAction.getString(ui, task != null ? task : tasks.get(index));
     }
 }
+

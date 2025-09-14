@@ -2,11 +2,24 @@ package teemo;
 
 import java.util.ArrayList;
 import teemo.task.Task;
+import teemo.Ui;
 
-/**
- * A list of tasks using 1-based indexing for public methods.
- */
 public class TaskList {
+
+    @FunctionalInterface
+    public static interface ActionHandler {
+        Task handle(TaskList taskList, int index);
+    }
+
+    @FunctionalInterface
+    public static interface ActionDisplay {
+        void show(Ui ui, Task task);
+    }
+
+    @FunctionalInterface
+    public static interface StringDisplay {
+        String getString(Ui ui, Task task);
+    }
     private ArrayList<Task> tasks;
 
     public TaskList() {
@@ -18,18 +31,14 @@ public class TaskList {
     }
 
     public void add(Task task) {
-        assert task != null : "Cannot add null task to list";
         tasks.add(task);
     }
 
     public void delete(int index) {
-        assert index >= 1 : "Delete index cannot be negative";
-        assert index <= tasks.size() : "Delete index out of bounds";
         tasks.remove(index - 1);
     }
 
     public Task get(int index) {
-        assert index >= 1 && index <= tasks.size() : "Invalid task index: " + index;
         return tasks.get(index - 1);
     }
 
@@ -42,19 +51,19 @@ public class TaskList {
     }
 
     public boolean isValidIndex(int index) {
-        return index >= 1 && index <= tasks.size();
+        return index > 0 && index <= tasks.size();
     }
 
     public void markTask(int index) {
-        assert index >= 1 : "Task index cannot be negative";
-        assert index <= tasks.size() : "Task index " + index + " is out of bounds, list size: " + tasks.size();
-        tasks.get(index - 1).markAsDone();
+        if (isValidIndex(index)) {
+            tasks.get(index - 1).markAsDone();
+        }
     }
 
     public void unmarkTask(int index) {
-        assert index >= 1 : "Task index cannot be negative";
-        assert index <= tasks.size() : "Task index out of bounds";
-        tasks.get(index - 1).unmarkAsDone();
+        if (isValidIndex(index)) {
+            tasks.get(index - 1).unmarkAsDone();
+        }
     }
 
     public ArrayList<Task> findTasks(String keyword) {
