@@ -11,7 +11,16 @@ import teemo.task.Event;
 public class Parser {
 
     public static String parseCommand(String input) {
-        return input.trim().split("\\s+")[0];
+        assert input != null : "Input string cannot be null";
+        assert !input.trim().isEmpty() : "Input string cannot be empty";
+
+        String[] parts = input.trim().split("\\s+");
+        assert parts.length > 0 : "Input must contain at least one word";
+
+        String command = parts[0];
+        assert command != null && !command.isEmpty() : "Parsed command cannot be null or empty";
+
+        return command;
     }
 
     public static int parseTaskIndex(String input, String command) throws TeemoException {
