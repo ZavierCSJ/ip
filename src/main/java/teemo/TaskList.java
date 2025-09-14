@@ -1,10 +1,25 @@
 package teemo;
 
-import java.lang.reflect.AnnotatedArrayType;
 import java.util.ArrayList;
 import teemo.task.Task;
+import teemo.Ui;
 
 public class TaskList {
+
+    @FunctionalInterface
+    public static interface ActionHandler {
+        Task handle(TaskList taskList, int index);
+    }
+
+    @FunctionalInterface
+    public static interface ActionDisplay {
+        void show(Ui ui, Task task);
+    }
+
+    @FunctionalInterface
+    public static interface StringDisplay {
+        String getString(Ui ui, Task task);
+    }
     private ArrayList<Task> tasks;
 
     public TaskList() {
