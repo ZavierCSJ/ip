@@ -1,6 +1,7 @@
 package teemo;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import teemo.task.Task;
 import teemo.Ui;
 
@@ -67,12 +68,8 @@ public class TaskList {
     }
 
     public ArrayList<Task> findTasks(String keyword) {
-        ArrayList<Task> matchTasks = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
-                matchTasks.add(task);
-            }
-        }
-        return matchTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
