@@ -16,10 +16,13 @@ public class Storage {
     private String filePath;
 
     public Storage(String filePath) {
+        assert filePath != null && !filePath.trim().isEmpty() : "File path must be valid for Storage initialization";
         this.filePath = filePath;
     }
 
     public ArrayList<Task> loadTasks() {
+        assert filePath != null : "File path should be set before loading tasks";
+
         ArrayList<Task> tasks = new ArrayList<>();
         try {
             File file = new File(filePath);
@@ -54,6 +57,8 @@ public class Storage {
     }
 
     private Task parseTaskFromLine(String line) {
+        assert line != null && !line.trim().isEmpty() : "Line to parse should not be null or empty";
+
         try {
             String[] parts = line.split(" \\| ");
             if (parts.length < 3) {
@@ -85,10 +90,16 @@ public class Storage {
                     task = new Event(description, from, to);
                 }
                 break;
+            default:
+                assert false : "Unknown task type: " + type;
             }
             if (task != null && isDone) {
                 task.markAsDone();
             }
+
+            // Post-condition: if we created a task, it should have the correct description
+            assert task == null || task.getDescription().equals(description) :
+                    "Created task should have matching description";
 
             return task;
         } catch (Exception e) {
@@ -98,22 +109,25 @@ public class Storage {
     }
 
     public void saveTasks(ArrayList<Task> tasks) {
+        assert tasks != null : "Cannot save null task list";
+        assert filePath != null && !filePath.isEmpty() : "File path must be set before saving";
+
         try {
             File file = new File(filePath);
-//            System.out.println("DEBUG: Trying to save to: " + file.getAbsolutePath());
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
             }
 
-//            System.out.println("DEBUG: Number of tasks to save: " + tasks.size());
 
             FileWriter writer = new FileWriter(file);
             for (Task task : tasks) {
                 writer.write(task.toSaveFormat() + System.lineSeparator());
             }
             writer.close();
-//            System.out.println("DEBUG: File saved successfully");
+
+            // Post-condition: file should exist after successful save
+            assert file.exists() : "File should exist after saving";
         } catch (IOException e) {
             System.out.println("ERROR: Failed to save file!");
             System.out.println("ERROR: " + e.getMessage());
