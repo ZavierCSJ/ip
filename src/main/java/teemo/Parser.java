@@ -1,5 +1,8 @@
 package teemo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import teemo.task.Todo;
 import teemo.task.Deadline;
 import teemo.task.Event;
@@ -7,6 +10,7 @@ import teemo.task.Event;
 /**
  * Handles parsing of user input commands into executable actions.
  * Supports parsing of todo, deadline, event, mark, unmark, delete, list, and find commands.
+ * Include natural date parsing for deadlines and events
  */
 public class Parser {
 
@@ -66,12 +70,16 @@ public class Parser {
         }
         String[] parts = taskAndDeadline.split("/by ");
         String description = parts[0].trim();
-        String deadline = parts[1].trim();
+        String deadlineString = parts[1].trim();
 
         try {
+            // Use natural date parser instead of direct string passing
+            LocalDate deadline = NaturalDateParser.parseNaturalDate(deadlineString);
             return new Deadline(description, deadline);
+        } catch (TeemoException e) {
+            throw new TeemoException("Invalid deadline date: " + e.getMessage());
         } catch (RuntimeException e) {
-            throw new TeemoException(e.getMessage());
+            throw new TeemoException("Error parsing deadline: " + e.getMessage());
         }
     }
 
@@ -94,10 +102,13 @@ public class Parser {
         String description = parts[0].trim();
         String time = parts[1];
         String[] eventTimes = time.split("/to ");
-        String start = eventTimes[0].trim();
-        String end = eventTimes[1].trim();
+        String startString = eventTimes[0].trim();
+        String endString = eventTimes[1].trim();
 
         try {
+            // Use natural date/time parser for both start and end times
+            LocalDateTime start = NaturalDateParser.parseNaturalDateTime(startString);
+            LocalDateTime end = NaturalDateParser.parseNaturalDateTime(endString);
             return new Event(description, start, end);
         } catch (RuntimeException e) {
             throw new TeemoException(e.getMessage());
