@@ -1,34 +1,32 @@
 package teemo.task;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import teemo.NaturalDateParser;
+import teemo.TeemoException;
+
 public class Event extends Task {
-    private static final DateTimeFormatter INPUT_FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
     private static final DateTimeFormatter DISPLAY_FMT =
             DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private final LocalDateTime from;
+    private final LocalDateTime to;
 
-    public Event(String description, String fromStr, String toStr) {
-        super(description);
-        try {
-            this.from = LocalDateTime.parse(fromStr.trim(), INPUT_FMT);
-            this.to = LocalDateTime.parse(toStr.trim(), INPUT_FMT);
-
-            if (this.from.isAfter(this.to)) {
-                throw new IllegalArgumentException("Event start time cannot be after end time!");
-            }
-        } catch (DateTimeParseException e) {
-            throw new RuntimeException("Invalid date format! Use yyyy-MM-dd HHmm format, e.g 2019-12-12 2359");
-        }
+    public Event(String description, String fromStr, String toStr) throws TeemoException {
+        this(description,
+                NaturalDateParser.parseNaturalDateTime(fromStr.trim()),
+                NaturalDateParser.parseNaturalDateTime(toStr.trim()));
     }
 
-    public Event(String description, LocalDateTime from, LocalDateTime to) {
+    public Event(String description, LocalDateTime from, LocalDateTime to) throws TeemoException {
         super(description);
+        if (from == null || to == null) {
+            throw new TeemoException("Event times cannot be null.");
+        }
+        if (!to.isAfter(from)) {
+            throw new TeemoException("Event end must be after start.");
+        }
         this.from = from;
         this.to = to;
     }
@@ -43,11 +41,4 @@ public class Event extends Task {
         return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
     }
 
-    public LocalDateTime getFrom() {
-        return from;
-    }
-
-    public LocalDateTime getTo() {
-        return to;
-    }
 }
