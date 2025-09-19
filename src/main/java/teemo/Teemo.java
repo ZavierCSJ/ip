@@ -45,14 +45,13 @@ public class Teemo {
     }
 
     /**
-     * Teemo CLI application.
+     * Starts the Teemo CLI application.
      *
-     * <p>Initializes the user interface, storage system, and task list, then
-     * starts the main command processing loop. The application continues to
-     * process user commands until the user enters "bye" to exit.
+     * Initializes the user interface, storage system, and task list, and then processes user commands until "bye" is entered.
      *
-     * @param args command line arguments (not used)
+     * @param args command-line arguments (not used)
      */
+
     public static void main(String[] args) {
         Teemo teemo = new Teemo("data/teemo.txt");
         teemo.ui.showWelcome();
