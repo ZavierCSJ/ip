@@ -1,6 +1,8 @@
 # Teemo – Swift Scout Task Manager
 > *"Never underestimate the power of the Scout's code."* - Teemo
 
+![Teemo GUI](docs/Ui.png)
+
 Teemo helps you keep track of tasks so you never get ganked by deadlines. It's:
 - **Text-based** and **GUI-powered**
 - **Easy to learn**
