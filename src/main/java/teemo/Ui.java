@@ -84,7 +84,7 @@ public class Ui {
     public void showTaskAdded(Task task, int totalTasks) {
         showLine();
         System.out.println(getRandomTaskAddedConfirmation());
-        System.out.printf("  → %s\n", task);
+        System.out.printf("%s\n", task);
         System.out.printf("Total active missions: %d. All systems operational!\n", totalTasks);
         showLine();
     }
@@ -92,7 +92,7 @@ public class Ui {
     public void showTaskMarked(Task task) {
         showLine();
         System.out.println(getRandomTaskCompletedConfirmation());
-        System.out.printf("  → %s\n", task.toString());
+        System.out.printf("%s\n", task.toString());
         System.out.println("Ready for next assignment, commander!");
         showLine();
     }
@@ -100,7 +100,7 @@ public class Ui {
     public void showTaskUnmarked(Task task) {
         showLine();
         System.out.println("Mission status updated! Returning to active duty:");
-        System.out.printf("  → %s\n", task.toString());
+        System.out.printf("%s\n", task.toString());
         System.out.println("Task reactivated and back in the field!");
         showLine();
     }
@@ -108,14 +108,14 @@ public class Ui {
     public void showTaskDeleted(Task task) {
         showLine();
         System.out.println(getRandomTaskDeletionConfirmation());
-        System.out.printf("  → %s\n", task.toString());
+        System.out.printf("%s\n", task.toString());
         System.out.println("Area secured. What's the next objective?");
         showLine();
     }
 
     public void showError(String message) {
         showLine();
-        System.out.println("⚠️ TACTICAL ERROR DETECTED:");
+        System.out.println("TACTICAL ERROR DETECTED:");
         System.out.println(processErrorMessage(message));
         System.out.println("Please review and resubmit your command, commander!");
         showLine();
@@ -171,7 +171,7 @@ public class Ui {
      * @return formatted confirmation message
      */
     public String getTaskAddedString(Task task, int count) {
-        return String.format("[+] %s\n  → %s\n[!] Total active missions: %d. All systems operational!",
+        return String.format("%s\n%s\nTotal active missions: %d. All systems operational!",
                 getRandomTaskAddedConfirmation(), task, count);
     }
 
@@ -182,7 +182,7 @@ public class Ui {
      * @return formatted confirmation message
      */
     public String getTaskMarkedString(Task task) {
-        return String.format("[✓] %s\n  → %s\n[→] Ready for next assignment, commander!",
+        return String.format("%s\n%s\nReady for next assignment, commander!",
                 getRandomTaskCompletedConfirmation(), task);
     }
     /**
@@ -192,7 +192,7 @@ public class Ui {
      * @return formatted confirmation message
      */
     public String getTaskUnmarkedString(Task task) {
-        return String.format("[↺] Mission status updated! Returning to active duty:\n  → %s\n[→] Task reactivated and back in the field!",
+        return String.format("Mission status updated! Returning to active duty:\n%s\nTask reactivated and back in the field!",
                 task);
     }
     /**
@@ -202,7 +202,7 @@ public class Ui {
      * @return formatted confirmation message
      */
     public String getTaskDeletedString(Task task) {
-        return String.format("[X] %s\n  → %s\n[✓] Area secured. What's the next objective?",
+        return String.format("%s\n%s\nArea secured. What's the next objective?",
                 getRandomTaskDeletionConfirmation(), task);
     }
 
